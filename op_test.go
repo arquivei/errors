@@ -16,7 +16,7 @@ func TestGetOpStack(t *testing.T) {
 	err = errors.With(err, errors.Op("op 1"))
 	err = errors.With(err, errors.Op("op 2"))
 	const op3 errors.Op = "op 3"
-	err = errors.With(err, op3.Key(), op3.Value())
+	err = errors.With(err, op3)
 	op4 := errors.Op("op 4")
 	err = errors.With(err, op4)
 
