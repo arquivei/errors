@@ -8,10 +8,14 @@ import (
 
 func TestWithNoKeyValues(t *testing.T) {
 	rootErr := errors.New("some error")
-	err := errors.With(rootErr)
 
-	if err != rootErr {
-		t.Error("expected", rootErr, "got", err)
+	err := errors.With(rootErr)
+	if err == nil {
+		t.Fatal("expected non-nil error, got nil")
+	}
+	var e errors.Error
+	if !errors.As(err, &e) {
+		t.Fatalf("expected error to be of type errors.Error, got %T", err)
 	}
 }
 
