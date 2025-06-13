@@ -17,11 +17,14 @@ func TestGetFormatter(t *testing.T) {
 		errors.Op("op 2"),
 		errors.SeverityInput,
 		errors.Code("BAD_REQUEST"),
-		errors.KV("key 1", "value 1"),
-		errors.KV("key 2", "value 2"),
+		errors.KV("str", "value"),
+		errors.KV("int", 2),
+		errors.KV("slice", []string{"a", "b", "c"}),
+		errors.KV("map", map[string]int{"key 1": 1, "key 2": 2}),
 	)
-	if err.Error() != "op 2: op 1: [input] (BAD_REQUEST) some error {key 2: value 2, key 1: value 1}" {
-		t.Error("expected some error, got", err.Error())
+	expectedErrorMsg := `op 2: op 1: [input] (BAD_REQUEST) some error {map: map[key 1:1 key 2:2], slice: [a b c], int: 2, str: value}`
+	if err.Error() != expectedErrorMsg {
+		t.Errorf("expected '%s', got '%s'", expectedErrorMsg, err.Error())
 	}
 
 	err = errors.With(err, errors.Formatter(func(err error) string {

@@ -1,7 +1,12 @@
 package errors
 
-import "reflect"
+import (
+	"fmt"
+	"strconv"
+)
 
+// KeyValuer is an interface for key-value pairs that can be used in errors.
+// It provides methods to retrieve the key, value, and a string representation of the value.
 type KeyValuer interface {
 	Key() any
 	Value() any
@@ -27,6 +32,7 @@ func (kv KeyValue) String() string {
 	return stringify(kv.value)
 }
 
+// KV is a constructor for KeyValuer types.
 func KV(key any, value any) KeyValuer {
 	return KeyValue{
 		key:   key,
@@ -44,10 +50,12 @@ func stringify(v any) string {
 		return s.String()
 	case string:
 		return s
+	case int:
+		return strconv.Itoa(s)
 	case nil:
 		return "<nil>"
 	}
-	return reflect.TypeOf(v).String()
+	return fmt.Sprintf("%v", v)
 }
 
 type stringer interface {
