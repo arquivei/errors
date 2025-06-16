@@ -43,7 +43,7 @@ func GetFormatter(err error) Formatter {
 // It provides a comprehensive view of the error, including its context and any additional information that has been attached to it.
 // The format is as follows:
 // operation2: ... operation1: [severity] (code) root error message {key1: value1, key2: value2, ...}
-func FullFormater(err error) string {
+var FullFormater Formatter = func(err error) string {
 	sb := strings.Builder{}
 	sb.Grow(32)
 
@@ -58,12 +58,12 @@ func FullFormater(err error) string {
 }
 
 // RootErrorFormatter returns the root error's message.
-func RootErrorFormatter(err error) string {
+var RootErrorFormatter Formatter = func(err error) string {
 	return GetRootError(err).Error()
 }
 
-// RootErrorKVFormater formats the root error's message along with its key-value pairs.
-func RootErrorKVFormater(err error) string {
+// RootErrorKVFormatter formats the root error's message along with its key-value pairs.
+var RootErrorKVFormatter Formatter = func(err error) string {
 	sb := strings.Builder{}
 	sb.Grow(32)
 
