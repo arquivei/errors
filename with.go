@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"os"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -18,23 +17,6 @@ var (
 	// If set to true, the Op will include the line number where the anonymous function was defined.
 	VerboseOpOnAnonymousFunctions = true
 )
-
-func init() {
-	AutomaticallyAddOp = mustGetBoolEnv("ERRORS_AUTOMATICALLY_ADD_OP", AutomaticallyAddOp)
-	VerboseOpOnAnonymousFunctions = mustGetBoolEnv("ERRORS_VERBOSE_OP_ON_ANONYMOUS_FUNCTIONS", VerboseOpOnAnonymousFunctions)
-}
-
-func mustGetBoolEnv(envName string, defaultValue bool) bool {
-	envValue := os.Getenv(envName)
-	if envValue == "" {
-		return defaultValue
-	}
-	val, err := strconv.ParseBool(envValue)
-	if err != nil {
-		panic("invalid value for " + envName + ": " + envValue + ", must be true or false")
-	}
-	return val
-}
 
 func With(err error, keyvalues ...KeyValuer) error {
 	if err == nil {

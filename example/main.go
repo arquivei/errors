@@ -76,6 +76,9 @@ func main() {
 
 	fmt.Println("Default formatter ==>", err)
 
+	fmt.Println("Root error formatter ==>", errors.With(err, errors.RootErrorFormatter))
+	fmt.Println("Root error formatter with KV ==>", errors.With(err, errors.RootErrorKVFormatter))
+
 	err = errors.With(err, errors.Formatter(func(err error) string {
 		return fmt.Sprintf("formatted error: %s", errors.GetRootError(err))
 	}))
