@@ -8,7 +8,7 @@ import (
 
 func TestGetCode(t *testing.T) {
 	err := errors.New("some error")
-	if errors.GetCode(err) != errors.NoCode {
+	if errors.GetCode(err) != errors.CodeUnset {
 		t.Error("expected NoCode, got", errors.GetCode(err))
 	}
 

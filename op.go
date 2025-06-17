@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// Op represents an operation in the error stack.
 type Op string
 
 var _ KeyValuer = Op("")
@@ -22,6 +23,10 @@ func (op Op) String() string {
 
 type opKey struct{}
 
+// GetOpStack retrieves the operation stack from an error.
+// It returns a string representation of the operations in the stack,
+// formatted as "op1: op2: ...", where each operation is separated by ": ".
+// If no operations are found, it returns an empty string.
 func GetOpStack(err error) string {
 	ops := Values(err, opKey{})
 	if len(ops) == 0 {
