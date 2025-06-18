@@ -74,7 +74,7 @@ var RootErrorKVFormatter Formatter = func(err error) string {
 }
 
 func writeCode(sb *strings.Builder, code Code) {
-	if code == NoCode {
+	if code == CodeUnset {
 		return
 	}
 	sb.WriteString("(")

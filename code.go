@@ -4,7 +4,8 @@ type Code string
 
 var _ KeyValuer = Code("")
 
-const NoCode Code = ""
+// CodeUnset is the default value for Code, indicating no specific code is set.
+const CodeUnset Code = ""
 
 func (c Code) Key() any {
 	return codeKey{}
@@ -20,11 +21,12 @@ func (c Code) String() string {
 
 type codeKey struct{}
 
+// GetCode retrieves the Code from an error, returning CodeUnset if no code is set.
 func GetCode(err error) Code {
 	val := Value(err, codeKey{})
 	if code, ok := val.(Code); ok {
 		return code
 	}
 
-	return NoCode
+	return CodeUnset
 }

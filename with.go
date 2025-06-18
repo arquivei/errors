@@ -18,6 +18,7 @@ var (
 	VerboseOpOnAnonymousFunctions = true
 )
 
+// With adds key-value pairs to an error, allowing for additional context.
 func With(err error, keyvalues ...KeyValuer) error {
 	if err == nil {
 		return nil
