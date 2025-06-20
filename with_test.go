@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"runtime"
 	"testing"
 )
 
@@ -33,15 +34,16 @@ func TestWith(t *testing.T) {
 
 	// Check if the error message is formatted correctly
 	err = With(New("some error"), KV("key", "value"))
-	if err.Error() != "errors.TestWith: some error {key: value}" {
+	if err.Error() != "errors.TestWith: some error {key=value}" {
 		t.Error("expected 'errors.TestWith: some error {key: value}', got", err.Error())
 	}
 
 	err = func() error {
 		return With(New("some error"))
 	}()
-	if err.Error() != "errors.TestWith.func1 (line 41): some error" {
-		t.Error("expected 'errors.TestWith.func1 (line 41): some error', got", err.Error())
+	expected := "errors.TestWith.func1 (with_test.go:42): some error"
+	if err.Error() != expected {
+		t.Errorf("expected '%s', got '%s'", expected, err.Error())
 	}
 
 	// Force an anonymous function name
@@ -111,17 +113,19 @@ func Test_discardPackagePath(t *testing.T) {
 	}
 }
 
-func Test_getWithCaller(t *testing.T) {
+func Test_getCallerOp(t *testing.T) {
 	// Caso normal
-	result := getWithCaller()
-	if result == "<unknown function>" {
+	pc, _, _, _ := runtime.Caller(0)
+	result := getCallerOp(pc, false)
+	if result == opUnknownFunction {
 		t.Error("Expected function name, got unknown")
 	}
 
 	// Caso !ok
-	done := make(chan string)
+	done := make(chan Op)
 	go func() {
-		done <- getWithCaller()
+		pc, _, _, _ := runtime.Caller(3)
+		done <- getCallerOp(pc, false)
 	}()
 	if result := <-done; result != "<unknown function>" {
 		t.Errorf("Expected <unknown function>, got %s", result)

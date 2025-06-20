@@ -110,7 +110,7 @@ func writeKV(sb *strings.Builder, kvs []KeyValuer) {
 			sb.WriteString(", ")
 		}
 		sb.WriteString(stringify(kv.Key()))
-		sb.WriteString(": ")
+		sb.WriteString("=")
 		sb.WriteString(stringify(kv.Value()))
 
 		shouldAddComma = true
