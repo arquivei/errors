@@ -6,6 +6,25 @@ import (
 	"github.com/arquivei/errors"
 )
 
+func TestFormatter(t *testing.T) {
+	formatter := errors.Formatter(func(err error) string {
+		return "formatted error: " + err.Error()
+	})
+
+	if formatter == nil {
+		t.Error("expected non-nil formatter")
+	}
+	if formatter.String() != "<ErrorFormatter>" {
+		t.Errorf("expected '<ErrorFormatter>', got '%s'", formatter.String())
+	}
+	if formatter.Key() == nil {
+		t.Error("expected non-nil key")
+	}
+	if formatter.Value() == nil {
+		t.Error("expected non-nil value")
+	}
+}
+
 func TestGetFormatter(t *testing.T) {
 	err := errors.New("some error")
 	if errors.GetFormatter(err) == nil {
@@ -33,5 +52,35 @@ func TestGetFormatter(t *testing.T) {
 
 	if err.Error() != "custom formatter" {
 		t.Error("expected custom formatter, got", err.Error())
+	}
+}
+
+func TestRootErrorFormatter(t *testing.T) {
+	rootErr := errors.New("root error")
+	err := errors.With(
+		rootErr,
+		errors.RootErrorFormatter,
+		errors.SeverityInput,
+		errors.Code("BAD_REQUEST"),
+		errors.KV("key1", "value1"),
+	)
+
+	if err.Error() != "root error" {
+		t.Errorf("expected 'root error', got '%s'", err.Error())
+	}
+}
+func TestRootErrorKVFormatter(t *testing.T) {
+	rootErr := errors.New("root error")
+	err := errors.With(
+		rootErr,
+		errors.RootErrorKVFormatter,
+		errors.SeverityInput,
+		errors.Code("BAD_REQUEST"),
+		errors.KV("key1", "value1"),
+	)
+
+	expected := "root error {key1: value1}"
+	if err.Error() != expected {
+		t.Errorf("expected '%s', got '%s'", expected, err.Error())
 	}
 }

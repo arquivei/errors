@@ -9,7 +9,7 @@ import (
 func Value(err error, key any) any {
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
-			if e.keyval.Key() == key {
+			if e.keyval != nil && e.keyval.Key() == key {
 				return e.keyval.Value()
 			}
 		}
@@ -33,7 +33,7 @@ func Values(err error, key any) []any {
 	var e Error
 	for ; err != nil; err = errors.Unwrap(err) {
 		if errors.As(err, &e) {
-			if e.keyval.Key() == key {
+			if e.keyval != nil && e.keyval.Key() == key {
 				values = append(values, e.keyval.Value())
 			}
 		}
@@ -50,13 +50,11 @@ func ValuesT[T any](err error, key any) []T {
 	if len(values) == 0 {
 		return nil
 	}
-
 	tValues := make([]T, 0, len(values))
 	for _, v := range values {
 		if v == nil {
 			continue
 		}
-
 		if t, ok := v.(T); ok {
 			tValues = append(tValues, t)
 		}
@@ -74,6 +72,9 @@ func ValueAllSlice(err error) []KeyValuer {
 
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
+			if e.keyval == nil {
+				continue
+			}
 			if isBuiltInKeyValuer(e.keyval.Key()) {
 				continue
 			}
@@ -93,6 +94,9 @@ func ValuesMapOf(err error, keyType any) map[any][]any {
 	m := make(map[any][]any)
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
+			if e.keyval == nil {
+				continue
+			}
 			if reflect.TypeOf(e.keyval.Key()) == reflect.TypeOf(keyType) {
 				m[e.keyval.Key()] = append(m[e.keyval.Key()], e.keyval.Value())
 			}
@@ -109,6 +113,9 @@ func ValueMap(err error) map[any]any {
 	m := make(map[any]any)
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
+			if e.keyval == nil {
+				continue
+			}
 			if isBuiltInKeyValuer(e.keyval.Key()) {
 				continue
 			}
@@ -127,6 +134,9 @@ func ValueMapOf(err error, keyType any) map[any]any {
 	m := make(map[any]any)
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
+			if e.keyval == nil {
+				continue
+			}
 			if reflect.TypeOf(e.keyval.Key()) == reflect.TypeOf(keyType) {
 				if _, ok := m[e.keyval.Key()]; !ok {
 					m[e.keyval.Key()] = e.keyval.Value()
