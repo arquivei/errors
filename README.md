@@ -1,5 +1,9 @@
 # errors
 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/arquivei/errors)](https://pkg.go.dev/github.com/arquivei/errors)
+[![Go Report Card](https://goreportcard.com/badge/github.com/arquivei/errors)](https://goreportcard.com/report/github.com/arquivei/errors)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 A golang package to create meaningful errors.
 
 This package allows to inject any type of values into the errors.
