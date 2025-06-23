@@ -26,7 +26,7 @@ func doStuff() error {
 	// full name of the current function as the Op.
 	const op = errors.Op("doStuff")
 
-	err := fmt.Errorf("some error")
+	err := errors.Errorf("some error")
 
 	return errors.With(err,
 		errors.SeverityRuntime, op,
@@ -35,6 +35,20 @@ func doStuff() error {
 		errors.KV("context2", "value2"),
 	)
 }
+```
+
+You can use an option pattern to build the error:
+
+``` go
+	// Start with an empty slice or one with default values
+	errorOpts := []errors.KeyValuer{}
+	// Add more values as needed...
+	// if ... then add key1
+	errorOpts = append(errorOpts, errors.KV("key1", "value1"))
+	// if ... then add Severity
+	errorOpts = append(errorOpts, errors.SeverityInput)
+	// Build the final error and return
+	return errors.With(err, errorOpts...)
 ```
 
 Fetch values with `errors.Value*` functions:
@@ -67,9 +81,13 @@ The key-value pair is any type that implements the `KeyValuer` interface:
 type KeyValuer interface {
 	Key() any
 	Value() any
-	String() string
 }
 ```
+
+> Tip: It helps if the key and value both implement the `fmt.Stringer`
+> interface (`String() string`).
+> This will help the error formatter to print the key-value pair during calls
+> to `Error() string`.
 
 The `errors.With()` functions will wrap the given error with a list of 
 key-values. If more than one key-value is given, they will be chained together.
@@ -123,7 +141,7 @@ should be notified about an error on their application.
 ### Code
 
 This is a simple string to be used as error codes so your application can 
-differentiate different errors. 
+differentiate errors. 
 
 Whoever receives this error code should write a switch case to handle the 
 different possible codes.
@@ -135,16 +153,16 @@ switch errors.GetCode(err) {
 	case MyCode2:
 		// handle MyCode2
 	default:
-	    // handle unknown code
+		// handle unknown code
 }
 ```
 
 ### KV
 
-This is an arbitrary key-value pair that can be used to inject extra content in
+This is an arbitrary key-value pair that can be used to inject extra context in
 the error.
 
-All values are printed by the default error formatter as `{key: value, ...}`.
+All values are printed by the default error formatter as `{key=value, ...}`.
 
 The key can be any comparable value.
 
@@ -164,7 +182,7 @@ The `errors.FullFormater` is the default and will print something like (from the
 example package):
 
 ``` text
-customOpExample: main.doGreetings.func1 (line 58): main.doGreetings: main.greetings: main.greeter[...].sayHello: [fatal] (RUNTIME_ERROR) name cannot be empty {context3: value3, context2: value2, context1: value1}
+ customOpExample: main.doGreetings.func1 (main.go:58): main.doGreetings: main.greetings: main.greeter[...].sayHello: [fatal] (RUNTIME_ERROR) name cannot be empty {context3=value3, context2=value2, context1=value1}
 ```
 
 The `errors.RootErrorFormatter` will only print the root error:
@@ -177,6 +195,6 @@ And there is a variation `errors.RootErrorKVFormatter` that will print the
 root error with the KV as context.
 
 ``` text
-name cannot be empty {context3: value3, context2: value2, context1: value1}
+name cannot be empty {context3=value3, context2=value2, context1=value1}
 ```
 
