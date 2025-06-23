@@ -41,7 +41,7 @@ func TestGetFormatter(t *testing.T) {
 		errors.KV("slice", []string{"a", "b", "c"}),
 		errors.KV("map", map[string]int{"key 1": 1, "key 2": 2}),
 	)
-	expectedErrorMsg := `op 2: op 1: [input] (BAD_REQUEST) some error {map: map[key 1:1 key 2:2], slice: [a b c], int: 2, str: value}`
+	expectedErrorMsg := `op 2: op 1: [input] (BAD_REQUEST) some error {map=map[key 1:1 key 2:2], slice=[a b c], int=2, str=value}`
 	if err.Error() != expectedErrorMsg {
 		t.Errorf("expected '%s', got '%s'", expectedErrorMsg, err.Error())
 	}
@@ -79,7 +79,7 @@ func TestRootErrorKVFormatter(t *testing.T) {
 		errors.KV("key1", "value1"),
 	)
 
-	expected := "root error {key1: value1}"
+	expected := "root error {key1=value1}"
 	if err.Error() != expected {
 		t.Errorf("expected '%s', got '%s'", expected, err.Error())
 	}

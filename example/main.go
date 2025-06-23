@@ -65,6 +65,10 @@ func doGreetings(n name) (err error) {
 	return
 }
 
+func thisWillPanic() {
+	panic("this will panic")
+}
+
 func main() {
 	flag.Parse()
 	n := ""
@@ -85,4 +89,12 @@ func main() {
 
 	fmt.Println("Custom formatter ==>", err)
 
+	err = errors.DontPanic(func() {
+		panic("hello anonymous function panic")
+	})
+
+	fmt.Println("DontPanic (anonymous) ==>", err)
+
+	err = errors.DontPanic(thisWillPanic)
+	fmt.Println("DontPanic (named) ==>", err)
 }
