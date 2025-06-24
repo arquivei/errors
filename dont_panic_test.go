@@ -51,7 +51,7 @@ func TestDontPanic(t *testing.T) {
 func Test_getPanicOp(t *testing.T) {
 	op := getPanicOp()
 	if op != opUnknownFunction {
-		t.Errorf("expected unkown function, got %v", op)
+		t.Errorf("expected unknown function, got %v", op)
 	}
 
 	err := DontPanic(func() {
