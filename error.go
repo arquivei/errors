@@ -11,7 +11,11 @@ type Error struct {
 // Error returns the error message formatted by the formatter associated with the error.
 // If no formatter is set, it uses the default formatter.
 func (e Error) Error() string {
-	return GetFormatter(e)(e)
+	if e.err == nil {
+		return "<root error is nil>"
+	}
+
+	return e.err.Error()
 }
 
 // Unwrap returns the underlying error wrapped by this Error.

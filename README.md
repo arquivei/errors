@@ -35,6 +35,14 @@ func doStuff() error {
 		errors.KV("context2", "value2"),
 	)
 }
+
+func inAnotherPlace() {
+	err := doStuff()
+	fmt.Println(err.Error())
+	// Prints: some error
+	fmt.Println(errors.Format(err))
+	// Prints: doStuff: [runtime] (RUNTIME_ERROR) some error {context2=value2, context1=value1}
+}
 ```
 
 You can use an option pattern to build the error:

@@ -216,3 +216,39 @@ func TestValueMapOf(t *testing.T) {
 		t.Errorf("expected values map %v, got %v", expectedMap, valuesMap)
 	}
 }
+
+func TestValueAllSlice(t *testing.T) {
+	emptyErr := Error{err: New("empty error")}
+	if values := ValueAllSlice(emptyErr); len(values) != 0 {
+		t.Error("expected empty slice for empty error")
+	}
+
+	rootErr := New("root error")
+	// Test ValueAllSlice with no key-value pairs
+	values := ValueAllSlice(rootErr)
+	if len(values) != 0 {
+		t.Errorf("expected empty slice for root error, got %v", values)
+	}
+
+	// Test ValueAllSlice with a key-value pair
+	err := With(
+		rootErr,
+		KV("key1", "value1"),
+		KV("key2", "value2"),
+	)
+	values = ValueAllSlice(err)
+	if len(values) != 2 {
+		t.Errorf("expected slice with 2 key-value pairs, got %d", len(values))
+	}
+	// Check if the values are in the expected order
+	// Note: The order is the reverse of how they were added
+	expectedValues := []KeyValuer{
+		KeyValue{"key2", "value2"},
+		KeyValue{"key1", "value1"},
+	}
+	for i, v := range expectedValues {
+		if values[i].Key() != v.Key() || values[i].Value() != v.Value() {
+			t.Errorf("expected value %v, got %v", v, values[i])
+		}
+	}
+}
