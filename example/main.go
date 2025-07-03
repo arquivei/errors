@@ -78,23 +78,22 @@ func main() {
 	err := doGreetings(name(n))
 	err = errors.With(err, errors.Op("customOpExample"))
 
-	fmt.Println("Default formatter ==>", err)
+	fmt.Println("Default formatter ==>", errors.Format(err))
 
-	fmt.Println("Root error formatter ==>", errors.With(err, errors.RootErrorFormatter))
-	fmt.Println("Root error formatter with KV ==>", errors.With(err, errors.RootErrorKVFormatter))
+	fmt.Println("KV formatter ==>", errors.Format(errors.With(err, errors.KVFormatter)))
 
 	err = errors.With(err, errors.Formatter(func(err error) string {
 		return fmt.Sprintf("formatted error: %s", errors.GetRootError(err))
 	}))
 
-	fmt.Println("Custom formatter ==>", err)
+	fmt.Println("Custom formatter ==>", errors.Format(err))
 
 	err = errors.DontPanic(func() {
 		panic("hello anonymous function panic")
 	})
 
-	fmt.Println("DontPanic (anonymous) ==>", err)
+	fmt.Println("DontPanic (anonymous) ==>", errors.Format(err))
 
 	err = errors.DontPanic(thisWillPanic)
-	fmt.Println("DontPanic (named) ==>", err)
+	fmt.Println("DontPanic (named) ==>", errors.Format(err))
 }

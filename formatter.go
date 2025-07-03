@@ -29,6 +29,18 @@ func (Formatter) String() string {
 	return "<ErrorFormatter>"
 }
 
+// Format formats the error using the custom formatter associated with it.
+// If no custom formatter is set, it uses the default formatter, which is `FullFormatter`.
+// If the error is nil, it returns an empty string.
+func Format(err error) string {
+	// If the error is nil, return an empty string.
+	if err == nil {
+		return ""
+	}
+
+	return GetFormatter(err)(err)
+}
+
 // GetFormatter retrieves the custom formatter associated with the error.
 // If no custom formatter is set, it returns the default formatter, which is `FullFormatter`.
 func GetFormatter(err error) Formatter {
@@ -51,23 +63,18 @@ var FullFormater Formatter = func(err error) string {
 	writeSeverity(&sb, GetSeverity(err))
 	writeCode(&sb, GetCode(err))
 
-	sb.WriteString(GetRootError(err).Error())
+	sb.WriteString(err.Error())
 	writeKV(&sb, ValueAllSlice(err))
 
 	return sb.String()
 }
 
-// RootErrorFormatter returns the root error's message.
-var RootErrorFormatter Formatter = func(err error) string {
-	return GetRootError(err).Error()
-}
-
-// RootErrorKVFormatter formats the root error's message along with its key-value pairs.
-var RootErrorKVFormatter Formatter = func(err error) string {
+// KVFormatter formats the error's message along with its key-value pairs.
+var KVFormatter Formatter = func(err error) string {
 	sb := strings.Builder{}
 	sb.Grow(32)
 
-	sb.WriteString(GetRootError(err).Error())
+	sb.WriteString(err.Error())
 	writeKV(&sb, ValueAllSlice(err))
 
 	return sb.String()

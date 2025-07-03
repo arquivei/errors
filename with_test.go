@@ -34,22 +34,25 @@ func TestWith(t *testing.T) {
 
 	// Check if the error message is formatted correctly
 	err = With(New("some error"), KV("key", "value"))
-	if err.Error() != "errors.TestWith: some error {key=value}" {
-		t.Error("expected 'errors.TestWith: some error {key: value}', got", err.Error())
+	got := Format(err)
+	if got != "errors.TestWith: some error {key=value}" {
+		t.Error("expected 'errors.TestWith: some error {key=value}', got", got)
 	}
 
 	err = func() error {
 		return With(New("some error"))
 	}()
-	expected := "errors.TestWith.func1 (with_test.go:42): some error"
-	if err.Error() != expected {
-		t.Errorf("expected '%s', got '%s'", expected, err.Error())
+	expected := "errors.TestWith.func1 (with_test.go:43): some error"
+	got = Format(err)
+	if got != expected {
+		t.Errorf("expected '%s', got '%s'", expected, got)
 	}
 
 	// Force an anonymous function name
 	err = With(New("some error"), Op("customOp"))
-	if err.Error() != "customOp: some error" {
-		t.Error("expected 'customOp: some error', got", err.Error())
+	got = Format(err)
+	if got != "customOp: some error" {
+		t.Error("expected 'customOp: some error', got", got)
 	}
 
 	t.Run("UncomparableKey", func(t *testing.T) {
@@ -60,8 +63,9 @@ func TestWith(t *testing.T) {
 				t.FailNow()
 			}
 			if err, ok := r.(error); ok {
-				if err.Error() != "key is not comparable" {
-					t.Errorf("expected 'key is not comparable', got %s", err.Error())
+				got := Format(err)
+				if got != "key is not comparable" {
+					t.Errorf("expected 'key is not comparable', got %s", got)
 				}
 			} else {
 				t.Errorf("expected panic with error, got %v", r)
