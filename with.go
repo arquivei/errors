@@ -27,10 +27,13 @@ func With(err error, keyvalues ...KeyValuer) error {
 		if !reflect.TypeOf(keyval.Key()).Comparable() {
 			panic(ErrKeyNotComparable)
 		}
-		err = Error{err: err, keyval: keyval}
 		if keyval.Key() == (opKey{}) {
 			shouldAddAutomaticOp = false
+			if keyval.Value() == NoOp {
+				continue // NoOp means we don't want to add an Op
+			}
 		}
+		err = Error{err: err, keyval: keyval}
 	}
 
 	if shouldAddAutomaticOp {

@@ -17,6 +17,7 @@ func TestGetOpStack(t *testing.T) {
 	err = errors.With(err, errors.Op("op 2"))
 	const op3 errors.Op = "op 3"
 	err = errors.With(err, op3)
+	err = errors.With(err, errors.NoOp) // NoOp should not add an Op
 	op4 := errors.Op("op 4")
 	err = errors.With(err, op4)
 

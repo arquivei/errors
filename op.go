@@ -14,6 +14,10 @@ var (
 	// for anonymous functions.
 	// If set to true, the Op will include the line number where the anonymous function was defined.
 	VerboseOpOnAnonymousFunctions = true
+
+	// NoOp is a special Op that indicates no operation is associated with the error.
+	// It can e used to disable the automatic addition of Op to errors for a specific call to With.
+	NoOp = Op("no-op")
 )
 
 // Op represents an operation in the error stack. An Op is a string that describes an operation,

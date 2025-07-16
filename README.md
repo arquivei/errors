@@ -127,6 +127,10 @@ new one so it does not stack repetitive functions names.
 
 This can be disabled by setting `errors.AutomaticallyAddOp = false`.
 
+The Op can be disabled for a specific call using the special value `errors.NoOp`. 
+For example, `err = errors.With(err, errors.NoOp, errors.KV("k1", "v1"))`, would 
+append a new key-value pair without adding an automatic `Op`.
+
 ### Severity 
 
 This can be used to indicate the severity of an error. It can be:
