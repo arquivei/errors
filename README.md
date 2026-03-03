@@ -178,6 +178,17 @@ All values are printed by the default error formatter as `{key=value, ...}`.
 
 The key can be any comparable value.
 
+## Interoperability
+
+### Structured Logging
+
+The `Error` struct natively implements `slog.LogValuer`. This means that if you are using Go's `log/slog` and you pass the error to the logger, it will automatically unpack all context into structured JSON fields.
+
+### Standard Formatting
+
+The `Error` struct also implements the `fmt.Formatter` interface.
+Using `%+v` with `fmt.Printf` will automatically yield the rich format output (the same as `errors.Format(err)`), allowing you to skip explicitly calling `Format` in standard log prints.
+
 ### Formatter
 
 This is a special type that changes the behavior of `Error() string`  function.

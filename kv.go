@@ -28,7 +28,8 @@ func (kv KeyValue) Value() any {
 }
 
 // KV is a constructor for KeyValuer types.
-func KV(key any, value any) KeyValuer {
+// It ensures at compile-time that the provided key is of a comparable type.
+func KV[K comparable](key K, value any) KeyValuer {
 	return KeyValue{
 		key:   key,
 		value: value,
@@ -41,14 +42,21 @@ func KV(key any, value any) KeyValuer {
 // NOTE: Extracted from the context package.
 func stringify(v any) string {
 	switch s := v.(type) {
-	case fmt.Stringer:
-		return s.String()
+	case nil:
+		return "<nil>"
 	case string:
 		return s
 	case int:
 		return strconv.Itoa(s)
-	case nil:
-		return "<nil>"
+	case bool:
+		if s {
+			return "true"
+		}
+		return "false"
+	case error:
+		return s.Error()
+	case fmt.Stringer:
+		return s.String()
 	}
 	return fmt.Sprintf("%v", v)
 }

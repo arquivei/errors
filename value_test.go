@@ -243,8 +243,8 @@ func TestValueAllSlice(t *testing.T) {
 	// Check if the values are in the expected order
 	// Note: The order is the reverse of how they were added
 	expectedValues := []KeyValuer{
-		KeyValue{"key2", "value2"},
-		KeyValue{"key1", "value1"},
+		KeyValue{key: "key2", value: "value2"},
+		KeyValue{key: "key1", value: "value1"},
 	}
 	for i, v := range expectedValues {
 		if values[i].Key() != v.Key() || values[i].Value() != v.Value() {
