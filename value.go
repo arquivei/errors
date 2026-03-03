@@ -26,13 +26,11 @@ func ValueT[T any](err error, key any) T {
 
 // Values returns a slice of values associated with the given key from the error chain.
 // It traverses the error chain and collects all values that match the specified key.
-// If there are multiple values for the same key, all of them are included in the slice.
 func Values(err error, key any) []any {
 	var values []any
 
-	var e Error
 	for ; err != nil; err = errors.Unwrap(err) {
-		if errors.As(err, &e) {
+		if e, ok := err.(Error); ok {
 			if e.keyval != nil && e.keyval.Key() == key {
 				values = append(values, e.keyval.Value())
 			}
@@ -43,8 +41,6 @@ func Values(err error, key any) []any {
 }
 
 // ValuesT returns a slice of values associated with the given key from the error chain, cast to type T.
-// It traverses the error chain and collects all values that match the specified key.
-// If there are multiple values for the same key, all of them are included in the slice.
 func ValuesT[T any](err error, key any) []T {
 	values := Values(err, key)
 	if len(values) == 0 {
@@ -52,9 +48,6 @@ func ValuesT[T any](err error, key any) []T {
 	}
 	tValues := make([]T, 0, len(values))
 	for _, v := range values {
-		if v == nil {
-			continue
-		}
 		if t, ok := v.(T); ok {
 			tValues = append(tValues, t)
 		}
@@ -64,7 +57,6 @@ func ValuesT[T any](err error, key any) []T {
 }
 
 // ValueAllSlice returns a slice of all values from the error chain.
-// It skips built-in key-value pairs like code, severity, operation, and formatter.
 // If there are multiple values for the same key, only the first occurrence (last added) is included.
 func ValueAllSlice(err error) []KeyValuer {
 	var values []KeyValuer
@@ -75,12 +67,13 @@ func ValueAllSlice(err error) []KeyValuer {
 			if e.keyval == nil {
 				continue
 			}
-			if isBuiltInKeyValuer(e.keyval.Key()) {
+			key := e.keyval.Key()
+			if isBuiltInKeyValuer(key) {
 				continue
 			}
-			if _, exists := processed[e.keyval.Key()]; !exists {
+			if _, exists := processed[key]; !exists {
 				values = append(values, e.keyval)
-				processed[e.keyval.Key()] = struct{}{}
+				processed[key] = struct{}{}
 			}
 		}
 	}
@@ -89,15 +82,15 @@ func ValueAllSlice(err error) []KeyValuer {
 }
 
 // ValuesMapOf returns a map of key-value pairs from the error chain, filtered by the specified key type.
-// It collects all values associated with the same key, allowing multiple values for the same key.
 func ValuesMapOf(err error, keyType any) map[any][]any {
 	m := make(map[any][]any)
+	kt := reflect.TypeOf(keyType)
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
 			if e.keyval == nil {
 				continue
 			}
-			if reflect.TypeOf(e.keyval.Key()) == reflect.TypeOf(keyType) {
+			if reflect.TypeOf(e.keyval.Key()) == kt {
 				m[e.keyval.Key()] = append(m[e.keyval.Key()], e.keyval.Value())
 			}
 		}
@@ -107,8 +100,6 @@ func ValuesMapOf(err error, keyType any) map[any][]any {
 }
 
 // ValueMap returns a map of key-value pairs from the error chain.
-// It skips built-in key-value pairs like code, severity, operation, and formatter.
-// If there are multiple values for the same key, only the first occurrence (last added) is included.
 func ValueMap(err error) map[any]any {
 	m := make(map[any]any)
 	for ; err != nil; err = errors.Unwrap(err) {
@@ -116,11 +107,12 @@ func ValueMap(err error) map[any]any {
 			if e.keyval == nil {
 				continue
 			}
-			if isBuiltInKeyValuer(e.keyval.Key()) {
+			key := e.keyval.Key()
+			if isBuiltInKeyValuer(key) {
 				continue
 			}
-			if _, ok := m[e.keyval.Key()]; !ok {
-				m[e.keyval.Key()] = e.keyval.Value()
+			if _, ok := m[key]; !ok {
+				m[key] = e.keyval.Value()
 			}
 		}
 	}
@@ -129,15 +121,15 @@ func ValueMap(err error) map[any]any {
 }
 
 // ValueMapOf returns a map of key-value pairs from the error chain, filtered by the specified key type.
-// If there are multiple values for the same key, only the first occurrence (last added) is included.
 func ValueMapOf(err error, keyType any) map[any]any {
 	m := make(map[any]any)
+	kt := reflect.TypeOf(keyType)
 	for ; err != nil; err = errors.Unwrap(err) {
 		if e, ok := err.(Error); ok {
 			if e.keyval == nil {
 				continue
 			}
-			if reflect.TypeOf(e.keyval.Key()) == reflect.TypeOf(keyType) {
+			if reflect.TypeOf(e.keyval.Key()) == kt {
 				if _, ok := m[e.keyval.Key()]; !ok {
 					m[e.keyval.Key()] = e.keyval.Value()
 				}

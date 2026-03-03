@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"reflect"
 	"runtime"
 )
 
@@ -10,9 +9,6 @@ var (
 	// to errors when using the With function.
 	// If set to true, the Op will be automatically added to errors that do not already have an Op.
 	AutomaticallyAddOp = true
-
-	// ErrKeyNotComparable defines an error that is returned when a key in With is not comparable.
-	ErrKeyNotComparable = New("key is not comparable")
 )
 
 // With adds key-value pairs to an error, allowing for additional context.
@@ -24,8 +20,8 @@ func With(err error, keyvalues ...KeyValuer) error {
 	shouldAddAutomaticOp := AutomaticallyAddOp
 
 	for _, keyval := range keyvalues {
-		if !reflect.TypeOf(keyval.Key()).Comparable() {
-			panic(ErrKeyNotComparable)
+		if keyval == nil {
+			continue
 		}
 		if keyval.Key() == (opKey{}) {
 			shouldAddAutomaticOp = false

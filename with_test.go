@@ -54,25 +54,6 @@ func TestWith(t *testing.T) {
 	if got != "customOp: some error" {
 		t.Error("expected 'customOp: some error', got", got)
 	}
-
-	t.Run("UncomparableKey", func(t *testing.T) {
-		defer func() {
-			r := recover()
-			if r == nil {
-				t.Error("expected panic, got nil")
-				t.FailNow()
-			}
-			if err, ok := r.(error); ok {
-				got := Format(err)
-				if got != "key is not comparable" {
-					t.Errorf("expected 'key is not comparable', got %s", got)
-				}
-			} else {
-				t.Errorf("expected panic with error, got %v", r)
-			}
-		}()
-		_ = With(New("some error"), KV(func() {}, "value"))
-	})
 }
 
 func Test_isAnonymousFunction(t *testing.T) {

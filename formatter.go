@@ -56,8 +56,8 @@ func GetFormatter(err error) Formatter {
 // The format is as follows:
 // operation2: ... operation1: [severity] (code) root error message {key1: value1, key2: value2, ...}
 var FullFormater Formatter = func(err error) string {
-	sb := strings.Builder{}
-	sb.Grow(32)
+	var sb strings.Builder
+	sb.Grow(128)
 
 	writeOpStack(&sb, GetOpStack(err))
 	writeSeverity(&sb, GetSeverity(err))
@@ -71,8 +71,8 @@ var FullFormater Formatter = func(err error) string {
 
 // KVFormatter formats the error's message along with its key-value pairs.
 var KVFormatter Formatter = func(err error) string {
-	sb := strings.Builder{}
-	sb.Grow(32)
+	var sb strings.Builder
+	sb.Grow(128)
 
 	sb.WriteString(err.Error())
 	writeKV(&sb, ValueAllSlice(err))

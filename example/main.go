@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/arquivei/errors"
 )
@@ -77,6 +79,20 @@ func main() {
 	}
 	err := doGreetings(name(n))
 	err = errors.With(err, errors.Op("customOpExample"))
+
+	fmt.Println("--- Standard Library Interoperability ---")
+
+	// 1. New: Native support for fmt.Printf verbs
+	// %v is short (only root error), %+v is rich (full context)
+	fmt.Printf("Standard %%v:  %v\n", err)
+	fmt.Printf("Standard %%+v: %+v\n\n", err)
+
+	// 2. New: Native support for slog.LogValuer
+	// Slog will automatically unpack all context into structured attributes
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger.Error("Operation failed", "error", err)
+
+	fmt.Println("\n--- Library Specific Formatters ---")
 
 	fmt.Println("Default formatter ==>", errors.Format(err))
 

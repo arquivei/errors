@@ -44,18 +44,21 @@ type opKey struct{}
 // formatted as "op1: op2: ...", where each operation is separated by ": ".
 // If no operations are found, it returns an empty string.
 func GetOpStack(err error) string {
-	ops := Values(err, opKey{})
-	if len(ops) == 0 {
-		return ""
-	}
+	var sb strings.Builder
+	first := true
 
-	sb := strings.Builder{}
-	sb.Grow(32)
-
-	sb.WriteString(stringify(ops[0]))
-	for _, op := range ops[1:] {
-		sb.WriteString(": ")
-		sb.WriteString(stringify(op))
+	for ; err != nil; err = Unwrap(err) {
+		e, ok := err.(Error)
+		if !ok || e.keyval == nil {
+			continue
+		}
+		if e.keyval.Key() == (opKey{}) {
+			if !first {
+				sb.WriteString(": ")
+			}
+			sb.WriteString(stringify(e.keyval.Value()))
+			first = false
+		}
 	}
 
 	return sb.String()
